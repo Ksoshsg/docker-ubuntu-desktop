@@ -16,10 +16,19 @@ RUN apt install software-properties-common -y
 
 # Add Firefox repository and install
 RUN add-apt-repository ppa:mozillateam/ppa -y
-RUN echo 'Package: *' >> /etc/apt/preferences.d/mozilla-firefox
-RUN echo 'Pin: release o=LP-PPA-mozillateam' >> /etc/apt/preferences.d/mozilla-firefox
-RUN echo 'Pin-Priority: 1001' >> /etc/apt/preferences.d/mozilla-firefox
+
+# Create directory for apt preferences
+RUN mkdir -p /etc/apt/preferences.d /etc/apt/apt.conf.d
+
+# Set up Firefox preferences
+RUN echo 'Package: *' > /etc/apt/preferences.d/mozilla-firefox && \
+    echo 'Pin: release o=LP-PPA-mozillateam' >> /etc/apt/preferences.d/mozilla-firefox && \
+    echo 'Pin-Priority: 1001' >> /etc/apt/preferences.d/mozilla-firefox
+
+# Set up unattended upgrades for Firefox
 RUN echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' > /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+
+# Install Firefox
 RUN apt update -y && apt install -y firefox
 
 # Install theme
